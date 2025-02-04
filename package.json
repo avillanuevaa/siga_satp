@@ -1,0 +1,41 @@
+{
+    "private": true,
+    "scripts": {
+        "start": "concurrently \"npm run watch\" \"php artisan serve\"",
+        "dev": "vite",
+        "build": "vite build",
+        "watch": "vite build --watch"
+    },
+    "devDependencies": {
+        "@popperjs/core": "^2.11.6",
+        "axios": "^1.7.9",
+        "bootstrap": "^5.2.3",
+        "concurrently": "^8.2.0",
+        "laravel-vite-plugin": "^1.2.0",
+        "lodash": "^4.17.19",
+        "postcss": "^8.1.14",
+        "sass": "^1.56.1",
+        "vite": "^6.0.11"
+    },
+    "name": "siga_satp_backend",
+    "description": "Sistema Integrado de Gestión Administrativa - SIGA SATP",
+    "version": "1.0.0",
+    "main": "vite.config.js",
+    "directories": {
+        "test": "tests"
+    },
+    "dependencies": {
+        "admin-lte": "^4.0.0-beta3"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/jcbances6/siga_satp_backend.git"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/jcbances6/siga_satp_backend/issues"
+    },
+    "homepage": "https://github.com/jcbances6/siga_satp_backend#readme"
+}

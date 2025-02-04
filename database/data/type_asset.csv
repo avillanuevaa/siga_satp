@@ -1,0 +1,44 @@
+﻿number;category;detail;classifier;description
+B001;1;Alimentos Y Bebidas;23 1 1 1 1;ALIMENTOS Y BEBIDAS PARA CONSUMO HUMANO
+B002;1;Vestuario, Accesorios Y Prendas Diversas;23 1 2 1 1;VESTUARIO, ACCESORIOS Y PRENDAS DIVERSAS
+B003;1;Textiles Y Acabados Textiles;23 1 2 1 2;TEXTILES Y ACABADOS TEXTILES
+B004;1;Calzado;23 1 2 1 3;CALZADO
+B005;1;Combustibles Y Carburantes;23 1 3 1 1;COMBUSTIBLES Y CARBURANTES
+B006;1;Lubricantes, Grasas Y Afines;23 1 3 1 3;LUBRICANTES, GRASAS Y AFINES
+B007;1;Repuestos Y Accesorios de Oficina;23 1 5 1 1;REPUESTOS Y ACCESORIOS
+B008;1;Papeleria En General, Utiles Y Materiales De Oficina;23 1 5 1 2;PAPELERIA EN GENERAL, UTILES Y MATERIALES DE OFICINA
+B009;1;Aseo, Limpieza Y Tocador;23 1 5 3 1;ASEO, LIMPIEZA Y TOCADOR
+B010;1;Electricidad, Iluminación Y Electrónica;23 1 5 4 1;ELECTRICIDAD, ILUMINACION Y ELECTRONICA
+B011;1;Otros suministros;23 1 59999;OTROS
+B012;1;Repuestos Y Accesorios De Vehículos;23 1 6 1 1;DE VEHICULOS
+B013;1;Repuestos Y Accesorios de Comunicaciones Y Telecomunicaciones;23 1 6 1 2;DE COMUNICACIONES Y TELECOMUNICACIONES
+B014;1;Repuestos Y Accesorios De Seguridad;23 1 6 1 4;DE SEGURIDAD
+B015;1;Otros  Accesorios Y Repuestos;23 1 6 199;OTROS ACCESORIOS Y REPUESTOS
+B016;1;Materiales, Insumos, Instrumental Y Accesorios  Médicos, Quirúrgicos, Odontológicos Y De Laboratorio;23 1 8 2 1;MATERIAL, INSUMOS, INSTRUMENTAL Y ACCESORIOS  MEDICOS, QUIRURGICOS, ODONTOLOGICOS Y DE LABORATORIO
+B017;1;Suministros Para Mantenimiento Y Reparación Para Edificios Y Estructuras;23 111 1 1;PARA EDIFICIOS Y ESTRUCTURAS
+B018;1;Suministros Para Mantenimiento Y Reparación Para Vehículos;23 111 1 2;PARA VEHICULOS
+B019;1;Suministros Para Mantenimiento Y Reparación Para Mobiliario Y Similares;23 111 1 3;PARA MOBILIARIO Y SIMILARES
+B020;1;Suministros Para Mantenimiento Y Reparación Para Maquinarias Y Equipos;23 111 1 4;PARA MAQUINARIAS Y EQUIPOS
+B021;1;Otros Materiales De Mantenimiento;23 111 1 5;OTROS MATERIALES DE MANTENIMIENTO
+B022;1;Materiales De  Acondicionamiento;23 111 1 6;MATERIALES DE  ACONDICIONAMIENTO
+B023;1;Libros, Diarios, Revistas Y Otros Bienes Impresos No Vinculados A Enseñanza;23 199 1 3;LIBROS, DIARIOS, REVISTAS Y OTROS BIENES IMPRESOS NO VINCULADOS A ENSEÑANZA
+B024;1;Símbolos, Distintivos Y Condecoraciones;23 199 1 4;SIMBOLOS, DISTINTIVOS Y CONDECORACIONES
+B025;1;Otros Bienes;23 199 199;OTROS BIENES
+B026;1;Edificios Administrativos;26 1 2 1 1;COMPRA DE EDIFICIOS ADMINISTRATIVOS
+B027;1;Vehículos Para Transporte Terrestre;26 3 1 1 1;PARA TRANSPORTE TERRESTRE
+B028;1;Maquinas Y Equipos De Oficina;26 3 2 1 1;MAQUINAS Y EQUIPOS
+B029;1;Mobiliario De Oficina;26 3 2 1 2;MOBILIARIO
+B030;1;Equipos Computacionales Y Periféricos;26 3 2 3 1;EQUIPOS COMPUTACIONALES Y PERIFERICOS
+B031;1;Equipos De Comunicaciones Para Redes Informáticas;26 3 2 3 2;EQUIPOS DE COMUNICACIONES PARA REDES INFORMATICAS
+B032;1;Equipos De Telecomunicaciones;26 3 2 3 3;EQUIPOS DE TELECOMUNICACIONES
+B033;1;Mobiliario Médico;26 3 2 4 1;MOBILIARIO
+B034;1;Equipos Médicos;26 3 2 4 2;EQUIPOS
+B035;1;Aire Acondicionado Y Refrigeración;26 3 2 9 1;AIRE ACONDICIONADO Y REFRIGERACION
+B036;1;Aseo,  Limpieza Y Cocina;26 3 2 9 2;ASEO,  LIMPIEZA Y COCINA
+B037;1;Seguridad Industrial;26 3 2 9 3;SEGURIDAD INDUSTRIAL
+B038;1;Electricidad Y Electrónica;26 3 2 9 4;ELECTRICIDAD Y ELECTRONICA
+B039;1;Equipos E Instrumentos De Medición;26 3 2 9 5;EQUIPOS E INSTRUMENTOS DE MEDICION
+B040;1;Equipos Para Vehiculos;26 3 2 9 6;EQUIPOS PARA VEHICULOS
+B042;1;Patentes Y Marcas De Fábrica;26 6 1 3 1;PATENTES Y MARCAS DE FABRICA
+B043;1;Software;26 6 1 3 2;SOFTWARES
+B044;1;Otros Activos Intangibles;26 6 1 399;OTROS ACTIVOS INTANGIBLES
