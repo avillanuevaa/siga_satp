@@ -76,7 +76,7 @@ class DocumentSiafController extends AdminController
             $data = $request->all();
 
             $year = date("Y", strtotime($request->date));
-            
+
             $register = DocumentSiaf::where('type_new', $request->type_new)
                         ->where('serie', $request->serie)
                         ->where('number', $request->number)
@@ -106,7 +106,7 @@ class DocumentSiafController extends AdminController
         } catch (\Exception $e) {
             return redirect()->back()->withErrors([$e->getMessage()])->withInput();
         }
-        
+
     }
 
     /**
@@ -145,9 +145,9 @@ class DocumentSiafController extends AdminController
     {
         //
         $data = $request->all();
-        
+
         $year = date("Y", strtotime($request->date));
-            
+
         $register = DocumentSiaf::whereYear('date', '=', $year)
                                 ->where('type_new', $request->type_new)
                                 ->where('serie', $request->serie)
@@ -198,7 +198,7 @@ class DocumentSiafController extends AdminController
     public function uploadExcel(Request $request)
     {
 
-        
+
         try {
             $data = $request->all();
 
@@ -234,7 +234,7 @@ class DocumentSiafController extends AdminController
 
             $file->move($location, $newfilename);
 
-            DB::commit(); 
+            DB::commit();
 
             return redirect()->route('documentSiafs.index')
                         ->with([
@@ -287,7 +287,7 @@ class DocumentSiafController extends AdminController
     {
         return Excel::download((new DocumentsSiafExport(0, $request->year, 3)), 'excelSiafPendientes.xlsx', null, [\Maatwebsite\Excel\Excel::XLSX]); // 3 es el tipo que exporte pendientes
     }
-    
+
     public function closeSiafsByMonth(Request $request)
     {
         $data = $request->all();
@@ -315,6 +315,7 @@ class DocumentSiafController extends AdminController
 
     public function exportTxtPle(Request $request)
     {
+        ob_start();
         if ($request->type_report == 1) {
 
             $data = DocumentSiaf::select('id', 'date', 'type_new', 'serie', 'number', 'ruc', 'business_name', 'taxable_basis', 'untaxed_basis', 'impbp', 'igv', 'other_concepts', 'amount', 'doc_code', 'num_doc', 'doc_modify_date_of_issue', 'doc_modify_type', 'doc_modify_serie', 'doc_modify_number', 'payment_date', 'nParCodigo as idtipocomprobante', 'detraction_date', 'num_operation')
@@ -411,7 +412,7 @@ class DocumentSiafController extends AdminController
                 }
 
                 $new_template = filter_var($request->new_template, FILTER_VALIDATE_BOOLEAN);
-                
+
                 if ( $new_template ){
                     $satpRUC = "20441554436";
                     $satpRazonSocial = "SERVICIO DE ADMINIS. TRIBUTARIA DE PIURA";
@@ -432,7 +433,9 @@ class DocumentSiafController extends AdminController
                 }
 
             }
-            ob_end_clean();
+            if (ob_get_level() > 0) {
+              ob_end_clean();
+            }
             Storage::disk('local')->put($full_path, $content_txt);
             $path = storage_path() . '/' . 'app' . '/' . $full_path;
             return response()->download($path)->deleteFileAfterSend(true);
@@ -520,6 +523,6 @@ class DocumentSiafController extends AdminController
     }
 
 
-    
+
 
 }
