@@ -445,19 +445,22 @@ class DocumentSiafController extends AdminController
     public function exportTxtPlameDetail(Request $request)
     {
 
+        ob_start();
         if ($request->type_report == 2) {
-
             $data = DocumentSiaf::select('id', 'date', 'type_new', 'serie', 'number', 'ruc', 'total_honorary', 'payment_date', 'have_retention')->whereMonth('payment_date', $request->month)
             ->whereYear('payment_date', '=', $request->year)->where('active', 1)->where(function ($query) {
                 $query->where('type_new', 'R')->orWhere('type_new', 'N');
             })->get();
+
             $institution = Institution::first();
+
             $ffff = "0601"; //codigo formulario
             $year = date("Y");
             $mm = str_pad($request->month, 2, "0", STR_PAD_LEFT);
             $name_file = $ffff . $year . $mm . $institution->ruc . ".4ta";
             $full_path = 'public/' . $name_file;
             $content_txt = "";
+
             foreach ($data as $value) {
                 $Type_Doc_Ident_Proveedor = "06";
                 $RUC_Proveedor = $value->ruc;
@@ -470,7 +473,11 @@ class DocumentSiafController extends AdminController
                 $have_retention = $value->have_retention ? 1 : 0;
                 $content_txt .= $Type_Doc_Ident_Proveedor . "|" . $RUC_Proveedor . "|" . $type . "|" . $serie . "|" . $number . "|" . $total_honorary . "|" . $date_emision . "|" . $date_payment . "|" . $have_retention . "|" . "|" . "|" . "\r\n";
             }
-            ob_end_clean();
+
+            if (ob_get_level() > 0) {
+              ob_end_clean();
+            }
+
             Storage::disk('local')->put($full_path, $content_txt);
             $path = storage_path() . '/' . 'app' . '/' . $full_path;
             return response()->download($path)->deleteFileAfterSend(true);
@@ -479,9 +486,8 @@ class DocumentSiafController extends AdminController
 
     public function exportTxtPlameProvidersName(Request $request)
     {
-
+        ob_start();
         if ($request->type_report == 2) {
-
             $data = DocumentSiaf::select('ruc', 'last_name', 'mother_last_name', 'name')->whereMonth('payment_date', $request->month)->whereYear('payment_date', '=', $request->year)->where('active', 1)->where(function ($query) {
                 $query->where('type_new', 'R')->orWhere('type_new', 'N');
             })->distinct()->orderBy(DB::raw('CONCAT(last_name, mother_last_name, name)'))->get();
@@ -499,7 +505,11 @@ class DocumentSiafController extends AdminController
                 $double_axation_agreement = "0";
                 $content_txt .= $Type_Doc_Ident_Proveedor . "|" . $RUC_Proveedor . "|" . $value->last_name . "|" . $value->mother_last_name . "|" . $value->name . "|" . $domiciled . "|" . $double_axation_agreement . "|" . "\r\n";
             }
-            ob_end_clean();
+
+            if (ob_get_level() > 0) {
+              ob_end_clean();
+            }
+
             Storage::disk('local')->put($full_path, $content_txt);
             $path = storage_path() . '/' . 'app' . '/' . $full_path;
             return response()->download($path)->deleteFileAfterSend(true);
