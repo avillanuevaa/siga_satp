@@ -1,6 +1,5 @@
 # Utilizar la imagen base oficial de PHP 8.2 con FPM
-#FROM php:8.2-fpm
-FROM php:8.2.0-fpm
+FROM php:8.2-fpm
 
 # Establecer las variables de entorno para una configuración no interactiva
 ENV DEBIAN_FRONTEND=noninteractive
@@ -52,7 +51,7 @@ WORKDIR /var/www
 RUN chown -R $user:$user /var/www
 
 # Exponer el puerto para PHP-FPM
-EXPOSE 9002
+EXPOSE 9092
 
 # Comando por defecto para ejecutar PHP-FPM
 CMD ["php-fpm"]

@@ -9,8 +9,8 @@ services:
     environment:
       - DB_HOST=db
       - DB_DATABASE=db_siga_satp
-      - DB_USERNAME=user
-      - DB_PASSWORD=root
+      - DB_USERNAME=satp
+      - DB_PASSWORD=satpass
     #    ports:
     #      - "8000:8000"
     depends_on:
@@ -18,10 +18,10 @@ services:
 
   nginx:
     image: nginx:1.19-alpine
-    container_name: db_siga_satp-nginx
+    container_name: siga_satp-nginx
     restart: on-failure
     ports:
-      - "9002:80"
+      - "9092:80"
     volumes:
       - .:/var/www/
       - ./nginx:/etc/nginx/conf.d
@@ -29,13 +29,13 @@ services:
   db:
     image: mysql:latest
     restart: on-failure
-    container_name: db_siga_satp-db
+    container_name: siga_satp-db
     ports:
-      - 3309:3306
+      - 3311:3306
     volumes:
       - ./db_data:/var/lib/mysql
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: db_siga_satp
-      MYSQL_USER: user
-      MYSQL_PASSWORD: root
+      MYSQL_USER: satp
+      MYSQL_PASSWORD: satpass
