@@ -10,12 +10,15 @@
         "@popperjs/core": "^2.11.6",
         "axios": "^1.7.9",
         "bootstrap": "^5.2.3",
+        "browser-sync": "^2.29.3",
+        "browser-sync-webpack-plugin": "^2.3.0",
         "concurrently": "^8.2.0",
         "laravel-vite-plugin": "^1.2.0",
         "lodash": "^4.17.19",
         "postcss": "^8.1.14",
         "sass": "^1.56.1",
-        "vite": "^6.0.11"
+        "vite": "^6.0.11",
+        "vite-plugin-full-reload": "^1.2.0"
     },
     "name": "siga_satp_backend",
     "description": "Sistema Integrado de Gestión Administrativa - SIGA SATP",
