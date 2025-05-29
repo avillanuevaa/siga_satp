@@ -68,7 +68,7 @@ class PersonController extends AdminController
         $contractsType = Parameter::contractsType();
         $decretoLegislativo728ID =  key($contractsType); // get type decreto legislativo number 728 for default
         $data['person_type_id'] = $decretoLegislativo728ID;
-        
+
         $person = Person::create($data);
 
         $officeIds = $request->input('office', []);
@@ -88,11 +88,18 @@ class PersonController extends AdminController
      * Display the specified resource.
      *
      * @param  \App\Models\Person  $person
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function show(Person $person)
+    public function show($id)
     {
-        //
+        $person = Person::findOrFail($id);
+
+        return response()->json([
+            'id' => $person->id,
+            'name' => $person->name,
+            'lastname' => $person->lastname,
+            'document_number' => $person->document_number,
+        ]);
     }
 
     /**
@@ -151,28 +158,72 @@ class PersonController extends AdminController
         try {
             // Iniciar una transacción manual
             DB::beginTransaction();
-        
+
             // Verificar si la persona tiene relaciones en la tabla intermedia
             if ($person->office->count() > 0) {
                 // Si tiene relaciones, eliminarlas usando detach()
                 $person->office()->detach();
             }
-        
+
             // Eliminar la persona
             $person->delete();
-        
+
             // Confirmar los cambios en la base de datos
             DB::commit();
-            
+
             // Retornar true para indicar que todo salió correctamente
             return response()->json(['success' => true]);
         } catch (\Exception $e) {
             // Revertir la transacción en caso de error
             DB::rollback();
-            
+
             // Retornar false para indicar que hubo un error
             return response()->json(['success' => false]);
         }
+    }
+
+    public function search(Request $request)
+    {
+        $search = $request->input('term');
+
+        $results = Person::query()
+            ->where('document_number', 'like', "%{$search}%")
+            ->orWhere('name', 'like', "%{$search}%")
+            ->orWhere('lastname', 'like', "%{$search}%")
+            ->get()
+            ->map(function ($person) {
+                return [
+                    'id' => $person->id,
+                    'text' => $person->document_number . ' - ' . $person->name . ' ' . $person->lastname
+                ];
+            });
+
+        return response()->json($results);
+    }
+
+    public function searchById(Request $request)
+    {
+        $person = Person::with(['office' => function ($query) {
+            $query->select('offices.id', 'name', 'code_ue');
+        }])->find($request->id);
+
+        if (!$person) {
+            return response()->json(['message' => 'Trabajador no encontrado'], 404);
+        }
+
+        $office = $person->office->first();
+
+        return response()->json([
+            'id' => $person->id,
+            'name' => $person->name,
+            'lastname' => $person->lastname,
+            'document_number' => $person->document_number,
+            'office' => $office ? [
+                'id' => $office->id,
+                'name' => $office->name,
+                'code_ue' => $office->code_ue,
+            ] : null,
+        ]);
     }
 
     public function searchByDni(Request $request)

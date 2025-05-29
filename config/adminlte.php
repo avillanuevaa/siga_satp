@@ -319,7 +319,7 @@ return [
         ],
         [
             'text'    => 'Mantenimiento',
-            'icon'    => 'fas fa-fw fa-cog',
+            'icon'    => 'fas fa-fw fa-gavel',
             'submenu' => [
                 [
                     'text' => 'Clasificadores',
@@ -383,6 +383,22 @@ return [
                           'active' => ['admin/rendiciones/viaticos/*'],
                         ],
                     ],
+                ],
+            ],
+        ],
+        [
+            'text'    => 'Seguridad',
+            'icon'    => 'fas fa-fw fa-cog',
+            'submenu' => [
+                [
+                    'text' => 'Usuarios',
+                    'route'  => 'users.index',
+                    'active' => ['admin/security/users/*'],
+                ],
+                [
+                    'text' => 'Permisos',
+                    'route'  => 'settlements.index',
+                    'active' => ['admin/security/permissions/*'],
                 ],
             ],
         ],

@@ -31,6 +31,7 @@ class Person extends Model
 
     public function office()
     {
-        return $this->belongsToMany(Office::class, 'person_offices');
+        return $this->belongsToMany(Office::class, 'person_offices')
+            ->wherePivot('active', 1);
     }
 }
