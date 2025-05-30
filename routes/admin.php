@@ -164,10 +164,8 @@ Route::prefix('security')->name('users.')->group(function () {
     Route::put('users/{user}', [UserController::class, 'update'])->name('update');
     Route::get('users/{user}', [UserController::class, 'show'])->name('show');
     Route::delete('users/{user}', [UserController::class, 'destroy'])->name('destroy');
-    // Nueva ruta
     Route::get('users-export-print', [UserController::class, 'exportPrint'])->name('exportPrint');
     Route::get('users-copy', [UserController::class, 'exportCopy'])->name('exportCopy');
-
     Route::get('users-export-excel', [UserController::class, 'exportExcel'])->name('exportExcel');
     Route::get('users-export-csv', [UserController::class, 'exportCsv'])->name('exportCsv');
     Route::get('users-export-pdf', [UserController::class, 'exportPdf'])->name('exportPdf');

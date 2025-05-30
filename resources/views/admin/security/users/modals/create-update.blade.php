@@ -31,7 +31,7 @@
                         <label>Username</label>
                         <input type="text" class="form-control" id="username" readonly>
                     </div>
-                    <div class="mb-2">
+                    <div class="mb-2" id="div-office" style="display:none;">
                         <label>Oficina</label>
                         <input type="text" class="form-control" id="office" readonly>
                     </div>

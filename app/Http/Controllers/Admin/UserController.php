@@ -123,7 +123,6 @@ class UserController extends Controller
 
         $validator = Validator::make($input, [
             'email' => 'required|email',
-            'rol_id' => 'required|exists:roles,id',
             'password' => 'required'
         ]);
 
@@ -132,7 +131,6 @@ class UserController extends Controller
         }
 
         $user->email = $input['email'];
-        $user->rol_id = $input['rol_id'];
         $user->password = Hash::make($input['password']);
 
         $user->save();

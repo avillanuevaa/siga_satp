@@ -140,6 +140,7 @@
                 $('#user_id').val('');
                 $('#userModalLabel').text('Nuevo Usuario');
                 $('#select-trabajador-group').show();
+                $('#div-office').show();
                 $('#trabajador_id').val(null).trigger('change');
                 modal.show();
             });
@@ -147,17 +148,22 @@
             // 2) Abrir en EDITAR
             $('#users-table').on('click', '.btn-edit', function() {
                 const id = $(this).data('id');
-                const url = `{{ url("") }}/${id}`;
+                const url = '{{ route("users.show", ":id") }}'.replace(':id', id);
 
                 $.get(url, function(data) {
+                    console.log(data);
                     $('#user_id').val(data.id);
                     $('#userModalLabel').text('Editar Usuario');
                     $('#select-trabajador-group').hide();
                     $('#nombres').val(data.person.name);
                     $('#apellidos').val(data.person.lastname);
                     $('#dni').val(data.person.document_number);
+                    $('#div-office').hide();
                     $('#username').val(data.username);
                     $('#email').val(data.email);
+                    $('#password').val('');
+                    $('#password_confirmation').val('');
+
                     modal.show();
                 }).fail(() => {
                     alert('No se encontró el usuario.');
