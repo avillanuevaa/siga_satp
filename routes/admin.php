@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\PermissionsController;
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\Admin\DashboardController;
@@ -59,6 +60,10 @@ Route::prefix('configuracion')->group(function () {
     Route::get('oficinas/getOfficeAndParent', [OfficeController::class, 'getOfficeAndParent'])->name('offices.getOfficeAndParent');
 
     Route::get('activos/getListByClassifierCode', [TypeAssetController::class, 'getListByClassifierCode'])->name('assets.getListByClassifierCode');
+});
+
+Route::prefix('configuracion')->name('offices.')->group(function () {
+    Route::get('offices', [OfficeController::class, 'index'])->name('index');
 });
 
 /*
@@ -169,6 +174,17 @@ Route::prefix('security')->name('users.')->group(function () {
     Route::get('users-export-excel', [UserController::class, 'exportExcel'])->name('exportExcel');
     Route::get('users-export-csv', [UserController::class, 'exportCsv'])->name('exportCsv');
     Route::get('users-export-pdf', [UserController::class, 'exportPdf'])->name('exportPdf');
+});
+
+Route::prefix('security')->name('permissions.')->group(function () {
+    Route::get('permissions', [PermissionsController::class, 'index'])->name('index');
+    Route::post('permissions', [PermissionsController::class, 'store'])->name('store');
+    Route::get('permissions/create', [PermissionsController::class, 'create'])->name('create');
+    Route::get('permissions/{user}/edit', [PermissionsController::class, 'edit'])->name('edit');
+    Route::put('permissions/{user}', [PermissionsController::class, 'update'])->name('update');
+    Route::get('permissions/{user}', [PermissionsController::class, 'show'])->name('show');
+    Route::delete('permissions/{user}', [PermissionsController::class, 'destroy'])->name('destroy');
+    Route::get('permissions-copy', [PermissionsController::class, 'exportCopy'])->name('exportCopy');
 });
 
 /*

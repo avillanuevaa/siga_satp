@@ -38,10 +38,22 @@ class FinancialClassifierController extends AdminController
                     return "<div class='text-center'><span class='badge bg-{$badge}'>{$text}</span></div>";
                 })
                 ->addColumn('action', function($u) {
-                    $edit = '<a href="#" data-id="'.$u->id.'" class="btn btn-sm btn-success btn-edit"><i class="fas fa-edit"></i></a>';
-                    $del  = '<button data-id="'.$u->id.'" class="btn btn-sm btn-danger btn-delete"><i class="fas fa-trash-alt"></i></button>';
+                    $editUrl   = route('financialClassifiers.edit',    $u->id);
+                    $deleteUrl = route('financialClassifiers.destroy', $u->id);
+
+                    $edit = '<a href="'.$editUrl.'" class="btn btn-sm btn-success btn-edit">
+                                <i class="fas fa-edit"></i>
+                             </a>';
+
+                    $del = '<button type="button"
+                                data-url="'.$deleteUrl.'"
+                                class="btn btn-sm btn-danger btn-delete">
+                            <i class="fas fa-trash-alt"></i>
+                            </button>';
+
                     return "<div class='btn-group'>{$edit}{$del}</div>";
                 })
+
                 ->addColumn('active', fn($u) => $u->active)
                 ->rawColumns(['estado','action'])
                 ->filterColumn('T2.cParNombre', function($query, $keyword) {

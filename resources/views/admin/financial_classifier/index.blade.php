@@ -151,6 +151,56 @@
                     });
                 }
             });
+
+            $('#classifiers-table').on('click', '.btn-delete', function(e) {
+                e.preventDefault();
+
+                const button = $(this);
+                const url    = button.data('url');
+
+                Swal.fire({
+                    title: '¿Estás seguro?',
+                    text:  "¡No podrás revertir esto!",
+                    icon:  'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Sí, eliminar',
+                    cancelButtonText: 'Cancelar',
+                    reverseButtons: true,
+                    focusCancel: true,
+                    customClass: {
+                        confirmButton: 'btn btn-danger',
+                        cancelButton:  'btn btn-secondary'
+                    },
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: url,
+                            type: 'DELETE',
+                            headers: {
+                                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                            },
+                            success: function(response) {
+                                if (response.success) {
+                                    $('#classifiers-table').DataTable().ajax.reload(null, false);
+
+                                    Swal.fire({
+                                        title: 'Eliminado',
+                                        text:  'El registro ha sido eliminado.',
+                                        icon:  'success',
+                                        timer: 2000,
+                                        showConfirmButton: false
+                                    });
+                                } else {
+                                    Swal.fire('Error', 'No se pudo eliminar.', 'error');
+                                }
+                            },
+                            error: function(xhr) {
+                                Swal.fire('Error', 'Ha ocurrido un problema.', 'error');
+                            }
+                        });
+                    }
+                });
+            });
         });
     </script>
 @endpush
