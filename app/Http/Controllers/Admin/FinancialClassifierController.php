@@ -81,7 +81,6 @@ class FinancialClassifierController extends AdminController
                         });
                     }
                 })
-
                 ->make(true);
         }
 

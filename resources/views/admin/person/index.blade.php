@@ -14,14 +14,6 @@
 @section('content')
 <div class="card">
   <div class="card-header">
-    <h3 class="card-title">Búscar:</h3>
-  </div>
-  <div class="card-body">
-    @include('admin.person._search')
-  </div>
-</div>
-<div class="card">
-  <div class="card-header">
     <h5 class="card-title">Listado</h5>
     <div class="card-tools">
       <button type="button" class="btn btn-tool" data-card-widget="collapse">
@@ -29,89 +21,169 @@
       </button>
     </div>
   </div>
-  <!-- /.card-header -->
   <div class="card-body table-responsive">
-    <table class="table table-striped table-hover">
-      <caption>Listado de trabajadores en total: {{  $persons->total() }}</caption>
+    <table id="workers-table" class="table table-hover">
       <thead>
         <tr>
-          <th class="text-center align-middle">N° Documento</th>
+          <th class="text-center align-middle">Dni</th>
           <th class="text-center align-middle">Nombre</th>
           <th class="text-center align-middle">Apellido</th>
           <th class="text-center align-middle">Oficina</th>
+          <th class="text-center align-middle">Estado</th>
           <th class="text-center align-middle">Acción</th>
         </tr>
       </thead>
-      <tbody>
-        @foreach ($persons as $person)
-        <tr>
-          <td class="text-center align-middle">{{ $person->document_number }}</td>
-          <td class="text-center align-middle">{{ $person->name }}</td>
-          <td class="text-center align-middle">{{ $person->lastname }}</td>
-          <td class="align-middle">
-            @foreach ($person->office as $office)
-              {{ $office->name }}<br />
-            @endforeach
-          </td>
-          <td class="text-center align-middle">
-            <div class="btn-group">
-              <a href="{{ route('persons.edit', $person->id) }}" class="btn btn-success">
-                <span class="fa fa-edit"></span>
-              </a>
-              <button class="btn btn-danger btn-delete" data-id="{{ $person->id }}" >
-                <span class="fa fa-trash-alt"></span>
-              </button>
-            </div>
-          </td>
-        </tr>
-        @endforeach
-      </tbody>
     </table>
-    <div class="mt-2">
-      {{ $persons->appends(request()->all())->onEachSide(2)->links('admin.partials.pagination') }}
-    </div>
   </div>
 </div>
+@endsection
 
 @include('admin.partials.session-message')
 
-<script type="text/javascript">
-  document.querySelectorAll(".btn-delete").forEach(element =>
-    element.addEventListener("click", function() {
-      Swal.fire({
-        title: 'Desea eliminar el trabajador?',
-        text: 'Esta acción es irreversible',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Si, eliminar!',
-        cancelButtonText: 'No'
-      }).then((result) => {
-        if (result.isConfirmed) {
-          $.ajax({
-            type: 'DELETE',
-            url: "{{ route('persons.destroy', ':id') }}".replace(':id', element.dataset.id),
-            data: {
-              "_token": "{{ csrf_token() }}"
-            },
-            success: function(response) {
-              Swal.fire(
-                'Eliminado!',
-                'El trabajador ha sido eliminado.',
-                'success'
-              ).then(() => {
-                window.location.href = "{{ route('persons.index') }}";
-              });
-            },
-            error: function(response) {
-              Swal.fire(
-                'Uy!',
-                'Algo ha ido mal. Por favor, inténtelo de nuevo',
-                'error'
-              );
-            }
-          });
-        }
-      });
-    }));
-</script>
-@stop
+@push('css')
+    <link href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+    <link href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.bootstrap5.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0/dist/css/select2.min.css" rel="stylesheet" />
+    <link href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.dataTables.min.css" rel="stylesheet">
+    <link href="https://cdn.datatables.net/colvis/1.1.2/css/dataTables.colVis.css" rel="stylesheet">
+@endpush
+
+@push('js')
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0/dist/js/select2.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.bootstrap5.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.print.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.colVis.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            const table = $('#workers-table').DataTable({
+                processing: true,
+                serverSide: true,
+                ajax: {
+                    url: '{!! route("persons.index") !!}',
+                },
+                columns: [
+                    { data: 'dni',      name: 'people.document_number', className: 'text-center align-middle' },
+                    { data: 'nombre',   name: 'person_name',            className: 'text-center align-middle' },
+                    { data: 'apellido', name: 'people.lastname',        className: 'text-center align-middle' },
+                    { data: 'oficina',  name: 'office_name',            className: 'text-center align-middle' },
+                    { data: 'estado',   name: 'active',                 orderable: false, searchable: false, className: 'text-center align-middle' },
+                    { data: 'action',   name: 'action',                 orderable: false, searchable: false, className: 'text-center align-middle' },
+                ],
+                dom: 'Bfrtip',
+                buttons: [
+                    {
+                        extend: 'copy',
+                        text: '<i class="fas fa-copy"></i> Copiar',
+                        className: 'btn btn-sm btn-secondary'
+                    },
+                    {
+                        extend: 'print',
+                        text: '<i class="fas fa-print"></i> Imprimir',
+                        className: 'btn btn-sm btn-secondary'
+                    },
+                    {
+                        extend: 'colvis',
+                        text: '<i class="fas fa-columns"></i> Ver columnas',
+                        className: 'btn btn-sm btn-secondary',
+                    }
+                ],
+                initComplete: function () {
+                    $('#workers-table thead tr').clone(true).appendTo('#workers-table thead');
+                    const filterRow = $('#workers-table thead tr:eq(1)');
+                    filterRow.find('th')
+                        .removeClass('sorting sorting_asc sorting_desc')
+                        .off('click')
+                        .css('cursor', 'default');
+
+                    filterRow.find('th').each(function (i) {
+                        const title = $(this).text().trim();
+                        let $container = $('<div class="d-flex align-items-center"></div>');
+
+                        if (['Dni','Nombre','Apellido','Oficina'].includes(title)) {
+                            const $input = $(
+                                `<input type="text" class="form-control form-control-sm" placeholder="Buscar ${title}">`
+                            );
+                            const $btn = $(
+                                `<button type="button" class="btn btn-sm btn-light ms-1" title="Limpiar">
+                                    <i class="fas fa-times-circle"></i>
+                                </button>`
+                            );
+                            $btn.on('click', () => {
+                                $input.val('');
+                                table.column(i).search('').draw();
+                            });
+                            $input.on('keyup change clear', function () {
+                                if (table.column(i).search() !== this.value) {
+                                    table.column(i).search(this.value).draw();
+                                }
+                            });
+                            $container.append($input, $btn);
+                            $(this).html($container);
+                            return;
+                        }else{
+                            $(this).empty();
+                        }
+                        $(this).html('');
+                    });
+                }
+            });
+
+            $('#workers-table').on('click', '.btn-delete', function(e) {
+                e.preventDefault();
+
+                const button = $(this);
+                const url    = button.data('url');
+
+                Swal.fire({
+                    title: '¿Estás seguro?',
+                    text:  "¡No podrás revertir esto!",
+                    icon:  'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Sí, eliminar',
+                    cancelButtonText: 'Cancelar',
+                    reverseButtons: true,
+                    focusCancel: true,
+                    customClass: {
+                        confirmButton: 'btn btn-danger',
+                        cancelButton:  'btn btn-secondary'
+                    },
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: url,
+                            type: 'DELETE',
+                            headers: {
+                                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                            },
+                            success: function(response) {
+                                if (response.success) {
+                                    $('#workers-table').DataTable().ajax.reload(null, false);
+
+                                    Swal.fire({
+                                        title: 'Eliminado',
+                                        text:  'El registro ha sido eliminado.',
+                                        icon:  'success',
+                                        timer: 2000,
+                                        showConfirmButton: false
+                                    });
+                                } else {
+                                    Swal.fire('Error', 'No se pudo eliminar.', 'error');
+                                }
+                            },
+                            error: function(xhr) {
+                                Swal.fire('Error', 'Ha ocurrido un problema.', 'error');
+                            }
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+@endpush
+

@@ -15,9 +15,16 @@
             <table id="users-table" class="table table-hover table-bordered">
                 <thead>
                 <tr>
-                    <th>ID</th><th>DNI</th><th>Usuario</th><th>Nombres</th>
-                    <th>Apellidos</th><th>Email</th><th>Teléfono</th>
-                    <th>Rol</th><th>Creado</th><th>Acciones</th>
+                    <th>ID</th>
+                    <th>DNI</th>
+                    <th>Usuario</th>
+                    <th>Nombres</th>
+                    <th>Apellidos</th>
+                    <th>Email</th>
+                    <th>Teléfono</th>
+                    <th>Rol</th>
+                    <th>Creado</th>
+                    <th>Acciones</th>
                 </tr>
                 </thead>
             </table>
@@ -170,7 +177,6 @@
                 });
             });
 
-            // SELECT2 Trabajadores
             $('#trabajador_id').select2({
                 dropdownParent: $('#userModal'),
                 placeholder: 'Buscar trabajador',

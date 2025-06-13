@@ -62,10 +62,6 @@
                 serverSide: true,
                 ajax: {
                     url: '{!! route("financialClassifiers.index") !!}',
-                    data: function (d) {
-                        d.name = $('#search-name').val();
-                        d.code = $('#search-code').val();
-                    }
                 },
                 columns: [
                     { data: 'tipo',   name: 'T2.cParNombre', className: 'text-center align-middle' },

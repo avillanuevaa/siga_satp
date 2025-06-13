@@ -8,6 +8,7 @@ use App\Models\Parameter;
 use Illuminate\Http\Request;
 use App\Http\Requests\PersonRequest;
 use Illuminate\Support\Facades\DB;
+use Yajra\DataTables\Facades\DataTables;
 
 
 class PersonController extends AdminController
@@ -19,25 +20,68 @@ class PersonController extends AdminController
      */
     public function index(Request $request)
     {
-        //
-        $documentNumber = $request->document_number;
-        $fullName = $request->fullname;
+        if ($request->ajax()) {
+            $query = Person::query()
+                ->join('person_offices', 'person_offices.person_id', '=', 'people.id')
+                ->join('offices',        'offices.id',         '=', 'person_offices.office_id')
+                ->where('person_offices.active', 1)
+                ->where('people.active',         1)
+                ->select([
+                    'people.id',
+                    'people.name as person_name',
+                    'people.lastname',
+                    'people.document_number',
+                    'offices.name as office_name',
+                    'people.active',
+                ]);
 
-        $data = Person::with("office")
-                ->where('active', "1")
-                ->when($documentNumber, function ($query) use ($documentNumber) {
-                    return $query->where('document_number', 'LIKE', "%{$documentNumber}%");
+            return DataTables::of($query)
+                ->addColumn('dni',   fn($u) => $u->document_number ?? '')
+                ->addColumn('nombre', fn($u) => $u->person_name ?? '')
+                ->addColumn('apellido', fn($u) => $u->lastname ?? '')
+                ->addColumn('oficina',  fn($u) => $u->office_name)
+                ->addColumn('estado', function ($u) {
+                    $badge = $u->active ? 'success' : 'danger';
+                    $text  = $u->active ? 'Activo'  : 'Inactivo';
+                    return "<div class='text-center'><span class='badge bg-{$badge}'>{$text}</span></div>";
                 })
-                ->when($fullName, function ($query) use ($fullName) {
-                    return $query->whereRaw('CONCAT(name," ",lastname) LIKE ?', ["%{$fullName}%"]);
+                ->addColumn('action', function($u) {
+                    $editUrl   = route('persons.edit',    $u->id);
+                    $deleteUrl = route('persons.destroy', $u->id);
+
+                    $edit = '<a href="'.$editUrl.'" class="btn btn-sm btn-success btn-edit">
+                                <i class="fas fa-edit"></i>
+                             </a>';
+
+                    $del = '<button type="button"
+                                data-url="'.$deleteUrl.'"
+                                class="btn btn-sm btn-danger btn-delete">
+                            <i class="fas fa-trash-alt"></i>
+                            </button>';
+
+                    return "<div class='btn-group'>{$edit}{$del}</div>";
                 })
-                ->paginate(20);
-
-
-        return response()->view('admin.person.index', [
-            'persons' => $data,
-            'request' => $request
-        ]);
+                ->addColumn('active', fn($u) => $u->active)
+                ->rawColumns(['estado','action'])
+                ->filterColumn('person_name', function($query, $keyword) {
+                    $query->where('people.name', 'like', "%{$keyword}%");
+                })
+                ->filterColumn('office_name', function($query, $keyword) {
+                    $query->where('offices.name', 'like', "%{$keyword}%");
+                })
+                ->filter(function ($query) use ($request) {
+                    if ($search = $request->input('search.value')) {
+                        $query->where(function($q) use ($search) {
+                            $q->where('people.name',                'like', "%{$search}%")
+                                ->orWhere('people.lastname',        'like', "%{$search}%")
+                                ->orWhere('people.document_number', 'like', "%{$search}%")
+                                ->orWhere('offices.name',           'like', "%{$search}%");
+                        });
+                    }
+                })
+                ->make(true);
+        }
+        return view('admin.person.index');
     }
 
     /**
