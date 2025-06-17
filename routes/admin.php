@@ -64,6 +64,11 @@ Route::prefix('configuracion')->group(function () {
 
 Route::prefix('configuracion')->name('offices.')->group(function () {
     Route::get('offices', [OfficeController::class, 'index'])->name('index');
+    Route::post('offices', [OfficeController::class, 'store'])->name('store');
+    Route::get('offices/{office}/edit', [OfficeController::class, 'edit'])->name('edit');
+    Route::put('offices/{office}', [OfficeController::class, 'update'])->name('update');
+    Route::delete('offices/{office}', [OfficeController::class, 'destroy'])->name('destroy');
+    Route::get('offices/get-office-parent', [OfficeController::class, 'getOfficeAndParent'])->name('getOfficeAndParent');
 });
 
 /*
