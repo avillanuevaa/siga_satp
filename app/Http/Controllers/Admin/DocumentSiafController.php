@@ -353,7 +353,7 @@ class DocumentSiafController extends AdminController
                 // $fecha_vencimiento = "";
                 $tipo_comprobante = $value->type_new;
                 $serie_comprobante = $value->serie;
-                $anio_emision_aduanera = "0";
+                $anio_emision_aduanera = "";
                 $numero_comp_Pago = $value->number;
                 $Importe_No_Credito_Fiscal = "";
                 $Tipo_Doc_Ident_Proveedor = "6";
@@ -423,7 +423,7 @@ class DocumentSiafController extends AdminController
                     $Error_vacio = "";
                     $Fecha_Detraccion = !is_null($value->detraction_date) ? Carbon::createFromFormat('Y-m-d', $value->detraction_date)->format('d/m/Y') : '';
                     $numero_operacion = $value->num_operation;
-                    $Tipo_Cambio = "1.000";
+                    $Tipo_Cambio = "";
                     $fec_Emi_Comp_Pago_Modifica = ($fec_Emi_Comp_Pago_Modifica == "01/01/1900") ? '' : $fec_Emi_Comp_Pago_Modifica;
 
                     $content_txt .= $satpRUC . "|" . $satpRazonSocial . "|" . $periodo . "|" . $carSUNAT . "|" . $fecha_comprobante . "|" . $fecha_vencimiento . "|" . $tipo_comprobante . "|" . $serie_comprobante . "|" . $anio_emision_aduanera . "|" . $numero_comp_Pago . "|". $nroFinalRango  . "|" . $Tipo_Doc_Ident_Proveedor     . "|" . $RUC_Proveedor . "|" . $Razonsocial_Proveedor . "|" . $Base_Imponible_Adq_Gravadas_1 . "|" . $IGV_IPM_1 . "|" . $Base_Imponible_Adq_Gravadas_2 . "|" . $IGV_IPM_2 . "|" . $Base_Imponible_Adq_Gravadas_3 . "|" . $IGV_IPM_3 . "|" . $Base_Imponible_Adq_Gravadas_No_BV . "|" . $ISC . "|" . $Bolsas_plastico . "|" . $Otros_Tributos . "|" . $Importe_Total_Adq . "|" . $Codigo_Moneda . "|" . $Tipo_Cambio . "|" . $fec_Emi_Comp_Pago_Modifica . "|" . $Tipo_Comp_Pago_Modificado . "|" . $Serie_Comp_Modificado  . "|" . $Codigo_Dependencia_Aduanera . "|" . $Numero_Comp_Modificado . "|" . $Marca_Comp . "|" . $Clasificacion_Bienes_Servicios_Adquiridos . "|" . $Identificacion_Contrato_Proyecto_Soc_Irregulares . "|" . $Error_1 . "|" . $Error_2 . "|" . $Error_3 . "|" . $Error_4 . "|" . $Indicador_Comprobantes_pago_ . "|" . $Error_vacio . "|" . $Fecha_Detraccion . "|" . $numero_operacion . "\r\n";
