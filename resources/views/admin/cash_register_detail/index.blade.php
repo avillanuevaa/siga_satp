@@ -4,9 +4,11 @@
 <div class="row">
   <div class="col-md-12 d-flex flex-column flex-md-row justify-content-between align-items-md-center">
     <h1 class="mb-2 mb-sm-0">Caja chica detalle</h1>
-    <div class="d-flex flex-column flex-sm-row">
-      <a href="{{ route('cashRegisterDetails.create', ['cashRegister' => $cashRegister->id]) }}" class="btn btn-primary"><i class="fas fa-plus"></i> Nuevo registro</a>
-    </div>
+      @if($cashRegister->closed === 0)
+          <div class="d-flex flex-column flex-sm-row">
+              <a href="{{ route('cashRegisterDetails.create', ['cashRegister' => $cashRegister->id]) }}" class="btn btn-primary"><i class="fas fa-plus"></i> Nuevo registro</a>
+          </div>
+      @endif
   </div>
 </div>
 @stop
