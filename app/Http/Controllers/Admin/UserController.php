@@ -71,7 +71,6 @@ class UserController extends Controller
             ], 422);
         }
 
-        // Crear nuevo usuario
         $user = new User();
         $user->username   = $person->document_number;
         $user->email      = $request->email;

@@ -49,7 +49,7 @@ class PersonController extends AdminController
                     $editUrl   = route('persons.edit',    $u->id);
                     $deleteUrl = route('persons.destroy', $u->id);
 
-                    $edit = '<a href="'.$editUrl.'" class="btn btn-sm btn-success btn-edit">
+                    $edit = '<a href="'.$editUrl.'" class="btn btn-sm btn-info btn-edit">
                                 <i class="fas fa-edit"></i>
                              </a>';
 
@@ -102,7 +102,7 @@ class PersonController extends AdminController
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function store(PersonRequest $request)
     {
