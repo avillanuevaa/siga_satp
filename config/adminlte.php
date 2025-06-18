@@ -331,6 +331,11 @@ return [
                     'route'  => 'persons.index',
                     'active' => ['admin/configuracion/trabajadores/*/'],
                 ],
+                [
+                    'text' => 'Oficinas',
+                    'route'  => 'offices.index',
+                    'active' => ['admin/configuracion/oficinas/*/'],
+                ],
             ],
         ],
         [
@@ -397,7 +402,7 @@ return [
                 ],
                 [
                     'text' => 'Permisos',
-                    'route'  => 'settlements.index',
+                    'route'  => 'permissions.index',
                     'active' => ['admin/security/permissions/*'],
                 ],
             ],
