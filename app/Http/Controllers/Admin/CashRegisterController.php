@@ -5,28 +5,92 @@ namespace App\Http\Controllers\Admin;
 use App\Models\CashRegister;
 use App\Http\Requests\CashRegisterRequest;
 use App\Http\Requests\CashRegisterCloseRequest;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
+use Yajra\DataTables\DataTables;
 
 class CashRegisterController extends AdminController
 {
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
-        $data = CashRegister::select("*")
-                        ->with("user")
-                        ->with("user.person")
-                        ->paginate(20);
+        if ($request->ajax()) {
+            $query = CashRegister::select("*")
+                ->with("user.person");
 
+            session(['previous_url_cash_register' => url()->full()]);
 
-        session(['previous_url_cash_register' => url()->full()]);
+            $datatable = DataTables::of($query)
+                ->addColumn('year', fn($u) => $u->year ?? '')
+                ->addColumn('number', fn($u) => $u->number ?? '')
+                ->addColumn('document_number', fn($u) => $u->user?->person?->document_number ?? '')
+                ->addColumn('responsible', fn($u) => trim(($u->user?->person?->name ?? '') . ' ' . ($u->user?->person?->lastname ?? '')))
+                ->addColumn('amount', fn($u) => 'S/. ' . number_format($u->amount, 2))
+                ->addColumn('opening_date', fn($u) => Carbon::parse($u->opening_date)->format('d/m/Y'))
+                ->addColumn('close_date', fn($u) => $u->closing_date ? Carbon::parse($u->closing_date)->format('d/m/Y') : '')
+                ->addColumn('status', function($u) {
+                    return $u->closed == 1 ? '<span class="badge bg-danger">Cerrada</span>' : '<span class="badge bg-success">Abierta</span>';
+                })
+                ->addColumn('action', function($u) {
+                    $seeDetailsURL = route('cashRegisterDetails.index', $u->id);
+                    $closeBox = '';
+                    $seeDetails = '<a href="' . $seeDetailsURL . '" class="btn btn-info"><span class="fa fa-arrow-right"></span></a>';
 
-        return response()->view('admin.cash_register.index', [
-            'items' => $data
-        ]);
+                    if (!$u->closed) {
+                        $closeBox = '<button type="button" class="btn btn-danger" data-toggle="modal" data-id="' . $u->id . '" data-target="#onCloseCashRegister"><i class="fa fa-times"></i></button>';
+                    }
+
+                    $print = '<button type="button" class="btn btn-warning btn-onPrint" data-id="' . $u->id . '" data-number="' . $u->number . '"><i class="fa fa-print"></i></button>';
+
+                    return "<div class='btn-group'>{$print}{$closeBox}{$seeDetails}</div>";
+                })
+                ->rawColumns(['status', 'action'])
+                ->filterColumn('year', function($query, $keyword) {
+                    $query->where('year', 'like', "%{$keyword}%");
+                })
+                ->filterColumn('document_number', function($query, $keyword) {
+                    $query->whereHas('user.person', function($q) use ($keyword) {
+                        $q->where('document_number', 'like', "%{$keyword}%");
+                    });
+                })
+                ->filterColumn('responsible', function($query, $keyword) {
+                    $query->whereHas('user.person', function($q) use ($keyword) {
+                        $q->whereRaw("CONCAT(name, ' ', lastname) like ?", ["%{$keyword}%"]);
+                    });
+                })
+                // CORRECCIÓN PRINCIPAL: Filtro de estado
+                ->filterColumn('status', function($query, $keyword) {
+                    if ($keyword === '0') {
+                        $query->where('closed', 0);
+                    } elseif ($keyword === '1') {
+                        $query->where('closed', 1);
+                    }
+                })
+
+                // Filtro global corregido
+                ->filter(function ($query) use ($request) {
+                    $search = $request->input('search.value');
+                    if (!empty($search)) {
+                        $query->where(function($q) use ($search) {
+                            $q->where('year', 'like', "%{$search}%")
+                                ->orWhere('number', 'like', "%{$search}%")
+                                ->orWhereHas('user.person', function($subQ) use ($search) {
+                                    $subQ->where('document_number', 'like', "%{$search}%")
+                                        ->orWhereRaw("CONCAT(name, ' ', lastname) like ?", ["%{$search}%"]);
+                                });
+                        });
+                    }
+                })
+                ->toJson();
+
+            return $datatable;
+        }
+
+        return view('admin.cash_register.index');
     }
 
     /**
@@ -105,8 +169,8 @@ class CashRegisterController extends AdminController
     {
         //
 
-        
-        
+
+
     }
 
     /**
