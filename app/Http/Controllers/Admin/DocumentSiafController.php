@@ -16,6 +16,8 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
+use Yajra\DataTables\Facades\DataTables;
+use Illuminate\Support\Facades\Log;
 
 
 class DocumentSiafController extends AdminController
@@ -23,35 +25,117 @@ class DocumentSiafController extends AdminController
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function index(Request $request)
     {
-        //
-        $siaf = $request->siaf;
-        $currentYear = filter_var($request->current_year, FILTER_VALIDATE_BOOLEAN);
+        Log::info('DT Request Payload:', $request->all());
+        if ($request->ajax()) {
+            $query = DocumentSiaf::where('active', 1)
+                ->select([
+                    'id',
+                    'siaf',
+                    'date',
+                    'type_new',
+                    'serie',
+                    'number',
+                    'ruc',
+                    'amount',
+                    'total_honorary',
+                    'payment_date',
+                    'source',
+                    'status',
+                ])->orderBy('date', 'desc');
 
-        if($request->has('siaf')){
-            $request->current_year = $request->has('current_year') ? 'on' : 'off';
+            return DataTables::of($query)
+                ->addColumn('siaf', fn($item) => $item->siaf)
+                ->addColumn('fecha_emision', fn($item) => Carbon::parse($item->date)->format('d/m/Y'))
+                ->addColumn('tipo_doc', fn($item) => $item->type_new)
+                ->addColumn('serie_doc', fn($item) => $item->serie)
+                ->addColumn('num_doc', fn($item) => $item->number)
+                ->addColumn('ruc', fn($item) => $item->ruc)
+                ->addColumn('total', fn($item) =>
+                    ($item->type_new !== 'R' && $item->type_new !== 'N')
+                        ? number_format($item->amount, 2)
+                        : number_format($item->total_honorary, 2)
+                    )
+                ->addColumn('fecha_pago', fn($item) =>
+                    $item->payment_date
+                        ? Carbon::parse($item->payment_date)->format('d/m/Y')
+                        : ''
+                    )
+                ->addColumn('origen', fn($item) => $item->source === 1 ? 'Importado' : ($item->source === 2 ? 'Manual': 'None'))
+                ->addColumn('estado', function($item) {
+                    return match($item->status) {
+                        1 => '<span class="badge bg-danger">Pendiente</span>',
+                        2 => '<span class="badge bg-success">Registrado</span>',
+                        3 => '<span class="badge bg-info">Cerrado</span>',
+                        default => '<span class="badge bg-secondary">?</span>',
+                    };
+                })
+                ->addColumn('action', function($item) {
+                    $editUrl = route('documentSiafs.edit', $item->id);
+                    $edit    = "<a href='$editUrl' class='btn btn-sm btn-info me-1'><i class='fas fa-edit'></i></a>";
+                    $del     = "<button class='btn btn-sm btn-danger btn-delete' data-id='{$item->id}'><i class='fas fa-trash-alt'></i></button>";
+                    return "<div class='btn-group'>$edit$del</div>";
+                })
+                ->filterColumn('siaf', function($query, $keyword) {
+                    $query->where('siaf', 'like', "%{$keyword}%");
+                })
+                ->filterColumn('number', function($query, $keyword) {
+                    $query->where('number', 'like', "%{$keyword}%");
+                })
+                ->filterColumn('ruc', function($query, $keyword) {
+                    $query->where('ruc', 'like', "%{$keyword}%");
+                })
+                ->filterColumn('fecha_emision', function($query, $keyword) {
+                    if (!empty($keyword)) {
+                        $dates = explode('|', $keyword);
+
+                        if (count($dates) == 2) {
+                            $fromDate = $dates[0];
+                            $toDate = $dates[1];
+
+                            if (!empty($fromDate) && !empty($toDate)) {
+                                $fromDate = Carbon::createFromFormat('d/m/Y', $fromDate)->startOfDay();
+                                $toDate = Carbon::createFromFormat('d/m/Y', $toDate)->endOfDay();
+                                $query->whereBetween('date', [$fromDate, $toDate]);
+                            } elseif (!empty($fromDate)) {
+                                $fromDate = Carbon::createFromFormat('d/m/Y', $fromDate)->startOfDay();
+                                $query->where('date', '>=', $fromDate);
+                            } elseif (!empty($toDate)) {
+                                $toDate = Carbon::createFromFormat('d/m/Y', $toDate)->endOfDay();
+                                $query->where('date', '<=', $toDate);
+                            }
+                        } else {
+                            try {
+                                $date = Carbon::createFromFormat('d/m/Y', $keyword);
+                                $query->whereDate('date', $date->format('Y-m-d'));
+                            } catch (\Exception $e) {
+                                Log::info($e);
+                            }
+                        }
+                    }
+                })
+                ->filterColumn('origen', function($query, $keyword) {
+                    if ($keyword !== '') {
+                        $query->where('source', $keyword);
+                    }
+                })
+                ->filterColumn('estado', function($query, $keyword) {
+                    if ($keyword !== '') {
+                        $query->where('status', $keyword);
+                    }
+                })
+                ->rawColumns(['estado', 'action'])
+                ->make(true);
         }
 
-        $data = DocumentSiaf::where('active', 1)
-                ->where('siaf', $siaf)
-                ->when($currentYear, function ($query) {
-                    return $query->whereYear('date', date('Y'));
-                })
-                ->paginate(20);
-
-        session(['previous_url_document_siaf' => url()->current().'?'.$request->getQueryString()]);
-
-        return response()->view('admin.document_siaf.index', [
-            'documentSiafs' => $data,
-            'request' => $request
-        ]);
-
+        return view('admin.document_siaf.index');
     }
 
-    /**
+
+/**
      * Show the form for creating a new resource.
      *
      * @return \Illuminate\Http\Response
