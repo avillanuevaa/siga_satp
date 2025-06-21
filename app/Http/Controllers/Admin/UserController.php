@@ -10,6 +10,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 use Maatwebsite\Excel\Facades\Excel;
 use Yajra\DataTables\Facades\DataTables;
 
@@ -32,14 +33,38 @@ class UserController extends Controller
                 ->addColumn('apellidos', fn($u) => $u->person->lastname ?? '')
                 ->addColumn('telefono',  fn($u) => $u->person->phone ?? '')
                 ->addColumn('rol',       fn($u) => $u->role->description ?? $u->role->name ?? '')
+                ->addColumn('estado', function($item) {
+                    return match($item->active) {
+                        1 => '<span class="badge bg-success">Activo</span>',
+                        0 => '<span class="badge bg-danger">Inactivo</span>',
+                    };
+                })
                 ->editColumn('created_at', fn($u) => $u->created_at->format('d/m/Y H:i'))
                 ->addColumn('action', function($u) {
                     $edit = '<a href="#" data-id="'.$u->id.'" class="btn btn-sm btn-success btn-edit"><i class="fas fa-edit"></i></a>';
                     $del  = '<button data-id="'.$u->id.'" class="btn btn-sm btn-danger btn-delete"><i class="fas fa-trash-alt"></i></button>';
                     return "<div class='btn-group'>{$edit}{$del}</div>";
                 })
-                ->rawColumns(['action'])
-                ->make(true);
+                ->filter(function ($query) use ($request) {
+                    if ($request->has('search') && $search = $request->get('search')['value']) {
+                        $query->where(function ($q) use ($search) {
+                            $q->where('username', 'like', "%{$search}%")
+                                ->orWhere('email', 'like', "%{$search}%")
+                                ->orWhereHas('person', function ($sub) use ($search) {
+                                    $sub->where('document_number', 'like', "%{$search}%")
+                                        ->orWhere('name', 'like', "%{$search}%")
+                                        ->orWhere('lastname', 'like', "%{$search}%")
+                                        ->orWhere('phone', 'like', "%{$search}%");
+                                })
+                                ->orWhereHas('role', function ($sub) use ($search) {
+                                    $sub->where('description', 'like', "%{$search}%")
+                                        ->orWhere('name', 'like', "%{$search}%");
+                                });
+                        });
+                    }
+                })
+                ->rawColumns(['action', 'estado'])
+                ->toJson();
         }
 
         return view('admin.security.users.index');
@@ -63,28 +88,51 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        $person = Person::find($request->trabajador_id);
+        $validator = Validator::make($request->all(), [
+            'trabajador_id' => 'required|exists:people,id',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|min:6|confirmed',
+            'active' => 'boolean'
+        ], [
+            'trabajador_id.required' => 'Debe seleccionar un trabajador.',
+            'trabajador_id.exists' => 'El trabajador seleccionado no existe.',
+            'email.required' => 'El email es obligatorio.',
+            'email.email' => 'El email debe tener un formato válido.',
+            'email.unique' => 'Este email ya está registrado.',
+            'password.required' => 'La contraseña es obligatoria.',
+            'password.min' => 'La contraseña debe tener al menos 6 caracteres.',
+            'password.confirmed' => 'Las contraseñas no coinciden.'
+        ]);
 
-        if (!$person) {
+        if ($validator->fails()) {
             return response()->json([
-                'errors' => ['trabajador_id' => ['El trabajador no existe.']],
+                'errors' => $validator->errors()
             ], 422);
         }
 
-        $user = new User();
-        $user->username   = $person->document_number;
-        $user->email      = $request->email;
-        $user->person_id  = $person->id;
-        $user->rol_id     = 2;
-        $user->password   = Hash::make($request->password);
-        $user->active     = 1;
-        $user->save();
+        $person = Person::findOrFail($request->trabajador_id);
+
+        if (User::where('person_id', $person->id)->exists()) {
+            return response()->json([
+                'errors' => ['trabajador_id' => ['Este trabajador ya tiene un usuario asignado.']]
+            ], 422);
+        }
+
+        $user = User::create([
+            'username' => $person->document_number,
+            'email' => $request->email,
+            'person_id' => $person->id,
+            'rol_id' => 2,
+            'password' => Hash::make($request->password),
+            'active' => (bool) $request->active,
+        ]);
 
         return response()->json([
+            'success' => true,
             'message' => 'Usuario creado exitosamente.',
+            'data' => $user
         ]);
     }
-
 
     /**
      * Display the specified resource.
@@ -94,7 +142,7 @@ class UserController extends Controller
      */
     public function show($id)
     {
-        $user = User::with('person')->findOrFail($id);
+        $user = User::with(['person', 'role'])->findOrFail($id);
         return response()->json($user);
     }
 
@@ -118,26 +166,45 @@ class UserController extends Controller
      */
     public function update(Request $request, User $user)
     {
-        $input = $request->all();
-
-        $validator = Validator::make($input, [
-            'email' => 'required|email',
-            'password' => 'required'
+        $validator = Validator::make($request->all(), [
+            'email' => [
+                'required',
+                'email',
+                Rule::unique('users', 'email')->ignore($user->id)
+            ],
+            'password' => 'nullable|min:6|confirmed',
+            'active' => 'required|boolean'
+        ], [
+            'email.required' => 'El email es obligatorio.',
+            'email.email' => 'El email debe tener un formato válido.',
+            'email.unique' => 'Este email ya está registrado.',
+            'password.min' => 'La contraseña debe tener al menos 6 caracteres.',
+            'password.confirmed' => 'Las contraseñas no coinciden.',
+            'active.required' => 'El estado es obligatorio.',
+            'active.boolean' => 'El estado debe ser válido.'
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['error' => $validator->errors()], 400);
+            return response()->json([
+                'errors' => $validator->errors()
+            ], 422);
         }
 
-        $user->email = $input['email'];
-        $user->password = Hash::make($input['password']);
+        $updateData = [
+            'email' => $request->email,
+            'active' => (bool) $request->active
+        ];
 
-        $user->save();
+        if ($request->filled('password')) {
+            $updateData['password'] = Hash::make($request->password);
+        }
+
+        $user->update($updateData);
 
         return response()->json([
-            "success" => true,
-            "message" => "Actualización de usuario con éxito.",
-            "data" => $user
+            'success' => true,
+            'message' => 'Usuario actualizado exitosamente.',
+            'data' => $user
         ]);
     }
 
@@ -149,12 +216,12 @@ class UserController extends Controller
      */
     public function destroy(User $user)
     {
-        $user->delete();
+        $user->update(['active' => 0]);
 
         return response()->json([
-            "succes" => true,
-            "message" => "Usuario eliminado.",
-            "data" => $user
+            'success' => true,
+            'message' => 'Usuario desactivado correctamente.',
+            'data' => $user
         ]);
     }
 
@@ -166,7 +233,7 @@ class UserController extends Controller
 
     public function exportCopy()
     {
-        $users = User::with(['person','role'])->get();
+        $users = User::with(['person', 'role'])->get();
 
         $lines = [];
         foreach ($users as $u) {
