@@ -27,7 +27,7 @@ class CashRegisterDetailController extends AdminController
                             ->with('warehouses')
                             ->orderByRaw("issue_type, CASE WHEN issue_type = '89' THEN issue_number ELSE issue_date END")
                             ->paginate(20);
-        
+
                             // Calcular el índice continuo en todas las páginas
         $startIndex = (($items->currentPage() - 1) * 20) + 1;
 
@@ -156,7 +156,7 @@ class CashRegisterDetailController extends AdminController
         $cashRegisterDetail->load('warehouses');
         $cashRegisterDetail['view'] = $cashRegister->closed;
 
-        
+
         return response()->view('admin.cash_register_detail.edit', [
             'paymentReceiptsTypes' => Parameter::paymentReceiptsType(), //
             'identityCardTypes' => Parameter::identityCardType(), //scopeRequestsType
@@ -230,7 +230,7 @@ class CashRegisterDetailController extends AdminController
                         'icon' => 'success'
                     ],
                 ]);
-        
+
     }
 
     /**
@@ -256,20 +256,20 @@ class CashRegisterDetailController extends AdminController
         try {
 
             $cashRegisterDetail->delete();
-            
+
             DB::commit();
 
             return response()->json([
                 "success" => true,
             ]);
-            
+
         } catch (\Throwable $th) {
             DB::rollBack();
             return response()->json([
                 "success" => false,
                 'message' => $th->getMessage()
             ], 500);
-            
+
         }
 
     }
