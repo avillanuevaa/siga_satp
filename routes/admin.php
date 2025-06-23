@@ -187,6 +187,9 @@ Route::prefix('security')->name('permissions.')->group(function () {
     Route::get('permissions/create', [PermissionsController::class, 'create'])->name('create');
     Route::get('permissions/{user}/edit', [PermissionsController::class, 'edit'])->name('edit');
     Route::put('permissions/{user}', [PermissionsController::class, 'update'])->name('update');
+    Route::post('permissions/update', [PermissionsController::class, 'updatePermissions'])->name('updatePermissions');
+    Route::get('permissions/roles/list', [PermissionsController::class, 'getRoles'])->name('getRoles');
+    Route::post('permissions/{userId}/apply-role', [PermissionsController::class, 'applyRolePermissions'])->name('applyRolePermissions');
     Route::get('permissions/{user}', [PermissionsController::class, 'show'])->name('show');
     Route::delete('permissions/{user}', [PermissionsController::class, 'destroy'])->name('destroy');
     Route::get('permissions-copy', [PermissionsController::class, 'exportCopy'])->name('exportCopy');

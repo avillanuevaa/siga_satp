@@ -315,6 +315,7 @@ return [
         [
             'text' => 'Dashboard',
             'icon' => 'fas fa-fw fa-tachometer-alt',
+            'can'  => 'verDashboard',
             'route'  => 'dashboard.index',
         ],
         [
@@ -324,16 +325,19 @@ return [
                 [
                     'text' => 'Clasificadores',
                     'route'  => 'financialClassifiers.index',
+                    'can'  => 'verMantenimientoClasificadores',
                     'active' => ['admin/configuracion/clasificadores/*/'],
                 ],
                 [
                     'text' => 'Trabajadores',
                     'route'  => 'persons.index',
+                    'can'  => 'verMantenimientoTrabajadores',
                     'active' => ['admin/configuracion/trabajadores/*/'],
                 ],
                 [
                     'text' => 'Oficinas',
                     'route'  => 'offices.index',
+                    'can'  => 'verMantenimientoOficinas',
                     'active' => ['admin/configuracion/oficinas/*/'],
                 ],
             ],
@@ -345,11 +349,13 @@ return [
                 [
                     'text' => 'Documentos SIAF',
                     'route'  => 'documentSiafs.index',
+                    'can'  => 'verContabilidadSiaf',
                     'active' => ['admin/contabilidad/registro-siaf/create', 'regex:/^admin\/contabilidad\/registro-siaf\/[0-9]+\/edit$/', 'admin/contabilidad/registro-siaf/import-excel'],
                 ],
                 [
                     'text' => 'Exportación y cierre',
                     'route'  => 'documentSiafs.exportClose',
+                    'can'  => 'verContabilidadExportacion',
                     'active' => ['admin/contabilidad/registro-siaf/exportar-cierre'],
                 ],
             ],
@@ -361,11 +367,13 @@ return [
                 [
                     'text' => 'Solicitud',
                     'route'  => 'requestFiles.index',
+                    'can'  => 'verRendicionesSolicitudes',
                     'active' => ['admin/rendiciones/solicitud/*'],
                 ],
                 [
                     'text' => 'Liquidación',
                     'route'  => 'settlements.index',
+                    'can'  => 'verRendicionesLiquidaciones',
                     'active' => ['admin/rendiciones/liquidacion/*'],
                 ],
                 [
@@ -375,16 +383,19 @@ return [
                         [
                             'text'    => 'Caja chica',
                             'route'  => 'cashRegisters.index',
+                            'can'  => 'verRendicionesCajaChica',
                             'active' => ['admin/rendiciones/caja-chica/*'],
                         ],
                         [
                             'text' => 'Encargos',
                             'route'  => 'orderRegisters.index',
+                            'can'  => 'verRendicionesEncargos',
                             'active' => ['admin/rendiciones/encargos/*'],
                         ],
                         [
                           'text' => 'Viáticos',
                           'route'  => 'viaticRegisters.index',
+                          'can'  => 'verRendicionesViaticos',
                           'active' => ['admin/rendiciones/viaticos/*'],
                         ],
                     ],
@@ -398,11 +409,13 @@ return [
                 [
                     'text' => 'Usuarios',
                     'route'  => 'users.index',
+                    'can'  => 'verSeguridad',
                     'active' => ['admin/security/users/*'],
                 ],
                 [
-                    'text' => 'Permisos',
+                    'text'   => 'Permisos',
                     'route'  => 'permissions.index',
+                    'can'    => 'verSeguridad',
                     'active' => ['admin/security/permissions/*'],
                 ],
             ],
