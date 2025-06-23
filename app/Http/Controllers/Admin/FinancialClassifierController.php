@@ -81,7 +81,7 @@ class FinancialClassifierController extends AdminController
                         });
                     }
                 })
-                ->make(true);
+                ->toJson();
         }
 
         return view('admin.financial_classifier.index');

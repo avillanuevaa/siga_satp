@@ -14,7 +14,7 @@
 @section('content')
     <div class="card mt-3">
         <div class="card-body">
-            <table id="classifiers-table" class="table table-hover table-bordered">
+            <table id="classifiers-table" class="table table-hover table-bordered nowrap w-100">
                 <thead>
                 <tr>
                     <th class="text-center align-middle">Tipo</th>
