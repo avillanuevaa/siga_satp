@@ -21,6 +21,7 @@ class CashRegister extends Model implements Auditable
         'closing_date',
         'user_id',
         'status',
+        'closed',
     ];
 
     public function user()

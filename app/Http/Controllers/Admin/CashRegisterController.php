@@ -32,7 +32,7 @@ class CashRegisterController extends AdminController
                 ->addColumn('amount', fn($u) => 'S/. ' . number_format($u->amount, 2))
                 ->addColumn('opening_date', fn($u) => Carbon::parse($u->opening_date)->format('d/m/Y'))
                 ->addColumn('close_date', fn($u) => $u->closing_date ? Carbon::parse($u->closing_date)->format('d/m/Y') : '')
-                ->addColumn('status', function($u) {
+                ->addColumn('closed', function($u) {
                     return $u->closed == 1 ? '<span class="badge bg-danger">Cerrada</span>' : '<span class="badge bg-success">Abierta</span>';
                 })
                 ->addColumn('action', function($u) {
@@ -48,7 +48,7 @@ class CashRegisterController extends AdminController
 
                     return "<div class='btn-group'>{$print}{$closeBox}{$seeDetails}</div>";
                 })
-                ->rawColumns(['status', 'action'])
+                ->rawColumns(['closed', 'action'])
                 ->filterColumn('year', function($query, $keyword) {
                     $query->where('year', 'like', "%{$keyword}%");
                 })
@@ -62,16 +62,11 @@ class CashRegisterController extends AdminController
                         $q->whereRaw("CONCAT(name, ' ', lastname) like ?", ["%{$keyword}%"]);
                     });
                 })
-                // CORRECCIÓN PRINCIPAL: Filtro de estado
-                ->filterColumn('status', function($query, $keyword) {
-                    if ($keyword === '0') {
-                        $query->where('closed', 0);
-                    } elseif ($keyword === '1') {
-                        $query->where('closed', 1);
+                ->filterColumn('closed', function($query, $keyword) {
+                    if ($keyword !== '') {
+                        $query->where('closed', $keyword);
                     }
                 })
-
-                // Filtro global corregido
                 ->filter(function ($query) use ($request) {
                     $search = $request->input('search.value');
                     if (!empty($search)) {

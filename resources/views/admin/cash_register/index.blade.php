@@ -80,7 +80,7 @@
                     { data: 'amount',           name: 'amount',         className: 'text-center align-middle' },
                     { data: 'opening_date',     name: 'opening_date',   className: 'text-center align-middle' },
                     { data: 'close_date',       name: 'closing_date',   className: 'text-center align-middle' },
-                    { data: 'status',           name: 'status',         orderable: false, searchable: false, className: 'text-center align-middle' },
+                    { data: 'closed',           name: 'closed',         className: 'text-center align-middle' },
                     { data: 'action',           name: 'action',         orderable: false, searchable: false, className: 'text-center align-middle' },
                 ],
                 createdRow: function(row, data) {
@@ -121,28 +121,24 @@
                         }
 
                         if (title === 'Estado') {
-                            const $select = $(`
+                            $(this).html(`
                                 <select class="form-control form-control-sm">
                                     <option value="">Todos</option>
                                     <option value="0">Abierta</option>
                                     <option value="1">Cerrada</option>
                                 </select>
-                            `);
-
-                            $select.on('change', function () {
-                                table.column(7).search(this.value).draw();
-                            });
-                            $(this).html($select);
+                            `).find('select')
+                                .on('change', function () {
+                                    table.column(7).search(this.value).draw();
+                                });
                             return;
                         }
 
-                        // Resto sin filtro
                         $(this).html('');
                     });
                 }
             });
 
-            // Botón Eliminar (igual que antes)
             $('#cash-table').on('click', '.btn-delete', function(e) {
                 e.preventDefault();
                 const url = $(this).data('url');
@@ -178,12 +174,10 @@
                 });
             });
 
-            // Delegación para el botón “Imprimir”
             $('#cash-table').on('click', '.btn-onPrint', function() {
                 const $btn        = $(this);
                 const originalHtml = $btn.html();
 
-                // Mostrar spinner y deshabilitar
                 $btn.prop('disabled', true)
                     .html('<i class="fas fa-spinner fa-spin"></i>');
 
@@ -217,7 +211,6 @@
                     });
             });
 
-            // Modal Cerrar caja (igual que antes)
             $('#onCloseCashRegister').on('show.bs.modal', function (event) {
                 const button = $(event.relatedTarget);
                 const dataId = button.data('id');
