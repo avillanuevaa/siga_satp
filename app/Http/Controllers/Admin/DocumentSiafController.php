@@ -128,7 +128,7 @@ class DocumentSiafController extends AdminController
                     }
                 })
                 ->rawColumns(['estado', 'action'])
-                ->make(true);
+                ->toJson();
         }
 
         return view('admin.document_siaf.index');

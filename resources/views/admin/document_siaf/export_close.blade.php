@@ -256,7 +256,7 @@ function onGenerateTxt() {
         console.log(error);
       });
   } else if (typeReport === 2) {
-    
+
     fetch(`{{ route("documentSiafs.exportTxtPlameDetail") }}?${queryParams}`)
       .then(response => {
         if (!response.ok) {
@@ -271,7 +271,7 @@ function onGenerateTxt() {
         // const year = this.year;
         const mm = month.toString().padStart(2, '0');
         const name_file = `${ffff}${year}${mm}${ruc}.4ta`;
-        
+
         const file = new Blob([event], {
           type: 'text/csv',
         });
@@ -298,7 +298,7 @@ function onGenerateTxt() {
 
 
     fetch(`{{ route("documentSiafs.exportTxtPlameProvidersName") }}?${queryParams}`)
-    
+
       .then(response => {
         if (!response.ok) {
           throw new Error(`Network response was not ok: ${response.status}`);
@@ -312,7 +312,7 @@ function onGenerateTxt() {
         // const year = this.year;
         const mm = month.toString().padStart(2, '0');
         const name_file = `${ffff}${year}${mm}${ruc}.ps4`;
-        
+
         const file = new Blob([event], {
           type: 'text/csv',
         });
@@ -386,7 +386,7 @@ function onGeneratePending() {
 
 $(document).ready(function () {
   $('#type_report').on('change', function() {
-    const selectedValue = $(this).val(); 
+    const selectedValue = $(this).val();
     const newTemplateElement = document.querySelector('.new-template');
 
     if (selectedValue === '1') {
