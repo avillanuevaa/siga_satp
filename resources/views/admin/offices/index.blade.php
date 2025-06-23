@@ -69,16 +69,6 @@
                 dom: 'Bfrtip',
                 buttons: [
                     {
-                        extend: 'copy',
-                        text: '<i class="fas fa-copy"></i> Copiar',
-                        className: 'btn btn-sm btn-secondary'
-                    },
-                    {
-                        extend: 'print',
-                        text: '<i class="fas fa-print"></i> Imprimir',
-                        className: 'btn btn-sm btn-secondary'
-                    },
-                    {
                         extend: 'colvis',
                         text: '<i class="fas fa-columns"></i> Ver columnas',
                         className: 'btn btn-sm btn-secondary',
