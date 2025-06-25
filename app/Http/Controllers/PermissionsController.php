@@ -29,7 +29,7 @@ class PermissionsController extends Controller
                 ->addColumn('user',      fn($u) => $u->username)
                 ->addColumn('nombres',   fn($u) => $u->person->name ?? '')
                 ->addColumn('apellidos', fn($u) => $u->person->lastname ?? '')
-                ->addColumn('rol',       fn($u) => $u->role->description ?? $u->role->name ?? '')
+                ->addColumn('rol',       fn($u) => $u->role->name ?? '')
                 ->addColumn('estado', function($item) {
                     return match($item->active) {
                         1 => '<span class="badge bg-success">Activo</span>',
@@ -146,14 +146,8 @@ class PermissionsController extends Controller
             $permissions = $request->permissions;
             $roleName = $request->role;
 
-            /*dd($userId, $permissions, $roleName);*/
-
             DB::beginTransaction();
-
-            // Obtener el usuario
             $user = User::findOrFail($userId);
-
-            // Actualizar rol si se proporcionó
             if ($roleName) {
                 $role = Role::where('name', $roleName)->first();
                 if ($role) {

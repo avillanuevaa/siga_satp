@@ -4,7 +4,7 @@
         <div class="modal-content border-0 shadow-lg">
             <div class="modal-header bg-gradient-primary text-white border-0">
                 <div class="d-flex align-items-center">
-                    <div class="bg-white bg-opacity-20 rounded-circle p-2 me-3">
+                    <div class="bg-white bg-opacity-20 rounded-circle p-1 mr-3">
                         <i class="fas fa-shield-alt fs-5"></i>
                     </div>
                     <div>
@@ -22,7 +22,7 @@
                         <div class="card border-0 bg-light">
                             <div class="card-body py-3">
                                 <div class="d-flex align-items-center">
-                                    <div class="bg-primary bg-opacity-10 rounded-circle p-3 me-3">
+                                    <div class="bg-primary bg-opacity-10 rounded-circle pr-1 pl-1 mr-3">
                                         <i class="fas fa-user text-primary"></i>
                                     </div>
                                     <div>
@@ -39,10 +39,10 @@
                                 <label for="roleType" class="form-label fw-semibold mb-2">
                                     <i class="fas fa-user-tag me-1"></i> Rol del Usuario
                                 </label>
-                                <select class="form-select form-select-sm border-0 shadow-sm" id="roleType">
-                                    <option value="Administrador">👑 Administrador</option>
-                                    <option value="Contador">📊 Contador</option>
-                                    <option value="Usuario">👤 Usuario</option>
+                                <select class="form-select form-control-sm border-0 shadow-sm" id="roleType">
+                                    <option value="Administrador">Administrador</option>
+                                    <option value="Contabilidad">Contabilidad</option>
+                                    <option value="Usuario">Usuario</option>
                                 </select>
                             </div>
                         </div>
@@ -530,7 +530,7 @@
 
                     // Recargar la tabla
                     if (typeof table !== 'undefined') {
-                        table.ajax.reload();
+                        $('#cash-table').ajax.reload();
                     }
                 },
                 error: function(xhr) {

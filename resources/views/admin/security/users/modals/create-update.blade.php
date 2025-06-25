@@ -72,7 +72,7 @@
                         <label class="form-label">
                             <i class="fas fa-envelope"></i>Email <span class="required">*</span>
                         </label>
-                        <input type="email" class="form-control" id="email" name="email" placeholder="usuario@empresa.com" value="juan.perez@empresa.com">
+                        <input type="email" class="form-control" id="email" name="email" placeholder="usuario@empresa.com">
                     </div>
 
                     <div class="mb-3 ml-2">
