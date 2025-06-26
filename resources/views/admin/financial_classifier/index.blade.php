@@ -84,9 +84,26 @@
                         className: 'btn btn-sm btn-secondary'
                     },
                     {
-                        extend: 'print',
                         text: '<i class="fas fa-print"></i> Imprimir',
-                        className: 'btn btn-sm btn-secondary'
+                        className: 'btn btn-dark btn-sm',
+                        action: function(e, dt, node) {
+                            const $btn = $(node);
+                            const original = $btn.html();
+                            $btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Procesando...');
+                            window.open('{!! route("financialClassifiers.exportPrint") !!}', '_blank');
+                            setTimeout(() => $btn.prop('disabled', false).html(original), 1000);
+                        }
+                    },
+                    {
+                        text: '<i class="fas fa-file-excel"></i> Excel',
+                        className: 'btn btn-success btn-sm',
+                        action: function(e, dt, node) {
+                            const $btn = $(node);
+                            const original = $btn.html();
+                            $btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Generando...');
+                            window.location.href = '{!! route("financialClassifiers.exportExcel") !!}';
+                            setTimeout(() => $btn.prop('disabled', false).html(original), 3000);
+                        }
                     },
                     {
                         extend: 'colvis',

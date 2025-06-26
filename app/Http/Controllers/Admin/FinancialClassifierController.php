@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Exports\FinancialClassifierExport;
 use Illuminate\Support\Facades\DB;
 use App\Models\FinancialClassifier;
 use App\Models\Parameter;
 use Illuminate\Http\Request;
 use App\Http\Requests\FinancialClassifierRequest;
+use Maatwebsite\Excel\Facades\Excel;
 use Yajra\DataTables\Facades\DataTables;
 
 
@@ -203,5 +205,24 @@ class FinancialClassifierController extends AdminController
         $data = FinancialClassifier::getFindbyTerm($search);
 
         return response()->json($data);
+    }
+
+    public function exportPrint()
+    {
+        $classifiers = DB::table('financial_classifiers AS T1')
+            ->select('T1.*', 'T2.cParNombre AS type_name')
+            ->join('parameters AS T2', function($join) {
+                $join->on('T1.type_id', '=', 'T2.nParCodigo')
+                    ->on('T2.nParClase','=', DB::raw("'1001'"))
+                    ->on('T2.nParTipo','=', DB::raw("'1'"));
+            })
+            ->get();
+
+        return view('admin.financial_classifier.print_classifiers', compact('classifiers'));
+    }
+
+    public function exportExcel()
+    {
+        return Excel::download(new FinancialClassifierExport, 'clasificadores.xlsx');
     }
 }

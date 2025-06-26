@@ -46,6 +46,9 @@ Route::prefix('configuracion')->group(function () {
         ->parameters(['clasificadores' => 'financialClassifier'])
         ->names('financialClassifiers');
 
+    Route::get('clasificadores-export-print', [FinancialClassifierController::class, 'exportPrint'])->name('financialClassifiers.exportPrint');
+    Route::get('clasificadores-export-excel', [FinancialClassifierController::class, 'exportExcel'])->name('financialClassifiers.exportExcel');
+
     Route::resource('trabajadores', PersonController::class)
         ->except(['show'])
         ->parameters(['trabajadores' => 'person'])
