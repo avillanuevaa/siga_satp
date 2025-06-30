@@ -47,6 +47,8 @@ class DocumentSiafController extends AdminController
                     'status',
                 ])->orderBy('date', 'desc');
 
+            session(['previous_url_document_siaf' => url()->current().'?'.$request->getQueryString()]);
+
             return DataTables::of($query)
                 ->addColumn('siaf', fn($item) => $item->siaf)
                 ->addColumn('fecha_emision', fn($item) => Carbon::parse($item->date)->format('d/m/Y'))
@@ -80,7 +82,10 @@ class DocumentSiafController extends AdminController
                     return "<div class='btn-group'>$edit$del</div>";
                 })
                 ->filterColumn('siaf', function($query, $keyword) {
-                    $query->where('siaf', 'like', "%{$keyword}%");
+                    $query->where('siaf', $keyword);
+                })
+                ->filterColumn('tipo_doc', function($query, $keyword) {
+                    $query->where('type_new', $keyword);
                 })
                 ->filterColumn('number', function($query, $keyword) {
                     $query->where('number', 'like', "%{$keyword}%");

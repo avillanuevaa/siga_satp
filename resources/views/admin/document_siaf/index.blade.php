@@ -23,17 +23,17 @@
     @endif
 
     <div class="card shadow">
-        <div class="card-header">
-            <h5 class="card-title">Listado de Documentos SIAF</h5>
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="card-title mb-0">Listado de Documentos SIAF</h5>
             <div class="card-tools">
                 <button type="button" class="btn btn-tool" data-card-widget="collapse">
                     <i class="fas fa-minus"></i>
                 </button>
             </div>
         </div>
-        <div class="card mt-3">
-            <div class="card-body">
-                <table id="siaf-table" class="table table-hover table-bordered w-100">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table id="siaf-table" class="table table-hover table-bordered dt-responsive nowrap w-100">
                     <thead>
                     <tr>
                         <th class="text-center align-middle">Siaf</th>
@@ -178,6 +178,39 @@
                 justify-content: space-between;
             }
         }
+
+        .siaf-filter input,
+        .siaf-filter select {
+            width: 100%;
+            max-width: 100px;
+        }
+
+        .date-clear-btn {
+            padding: 0.25rem 0.5rem;
+        }
+
+        @media (max-width: 950px) {
+            .siaf-filter input {
+                max-width: 150px;
+            }
+
+            .siaf-filter .d-flex {
+                flex-direction: column !important;
+                align-items: flex-start;
+            }
+
+            .siaf-filter .btn {
+                margin: 5px 0 0;
+            }
+        }
+
+        .fixed-siaf {
+            min-width: 100px;
+            max-width: 100px;
+            width: 150px;
+            white-space: nowrap;
+        }
+
     </style>
 @endpush
 
@@ -214,6 +247,12 @@
                     }
                 ],
                 lengthMenu: [[25,50,100], [25,50,100]],
+                columnDefs: [
+                    { targets: 0, className: 'siaf-filter text-center fixed-siaf', width: '150px' },
+                    { targets: [4,5], className: 'siaf-filter text-center', width: '100px' },
+                    { targets: 6, className: 'text-end', width: '80px' },
+                    { targets: -1, orderable: false, searchable: false, width: '80px' }
+                ],
                 columns: [
                     { data:'siaf', name:'siaf', className: 'text-center align-middle' },
                     { data:'fecha_emision', name:'fecha_emision', className: 'text-center align-middle' },
@@ -245,7 +284,7 @@
                         const title = $(this).text().trim();
                         let container = $('<div class="d-flex align-items-center"></div>');
 
-                        if (['Siaf','Num doc','RUC'].includes(title)) {
+                        if (['Siaf', 'Tipo Doc', 'Num doc','RUC'].includes(title)) {
                             const $searchColumnInput = $(
                                 `<input type="text" class="form-control form-control-sm" placeholder="Buscar">`
                             );
