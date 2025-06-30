@@ -234,7 +234,7 @@
                         render: function(data, type, row) {
                             const badges = {
                                 'Administrador': 'bg-danger',
-                                'Contabilidad': 'bg-purple',
+                                'Contabilidad': 'bg-success',
                                 'Usuario': 'bg-primary'
                             };
                             const badgeClass = badges[data] || 'bg-secondary';
