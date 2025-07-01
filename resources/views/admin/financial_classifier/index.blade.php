@@ -87,22 +87,38 @@
                         text: '<i class="fas fa-print"></i> Imprimir',
                         className: 'btn btn-dark btn-sm',
                         action: function(e, dt, node) {
+                            const paramsObj = dt.ajax.params();           // ya viene como objeto
+                            console.log('Params object:', paramsObj);     // muestra el objeto
+                            console.log('Pretty JSON:',
+                                JSON.stringify(paramsObj, null, 2)          // JSON indentado
+                            );
+
+                            // Si igual quieres la cadena pero legible:
+                            const paramString = $.param(paramsObj);
+                            const decoded     = decodeURIComponent(paramString);
+                            console.log('Decoded params string:', decoded);
+
+                            const url  = `{!! route("financialClassifiers.exportPrint") !!}?` + paramString;
                             const $btn = $(node);
-                            const original = $btn.html();
+                            const orig = $btn.html();
+
                             $btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Procesando...');
-                            window.open('{!! route("financialClassifiers.exportPrint") !!}', '_blank');
-                            setTimeout(() => $btn.prop('disabled', false).html(original), 1000);
+                            window.open(url, '_blank');
+                            setTimeout(() => $btn.prop('disabled', false).html(orig), 1000);
                         }
                     },
                     {
                         text: '<i class="fas fa-file-excel"></i> Excel',
                         className: 'btn btn-success btn-sm',
                         action: function(e, dt, node) {
-                            const $btn = $(node);
-                            const original = $btn.html();
+                            const params = $.param(dt.ajax.params());
+                            const url    = `{!! route("financialClassifiers.exportExcel") !!}?` + params;
+                            const $btn   = $(node);
+                            const orig   = $btn.html();
+
                             $btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Generando...');
-                            window.location.href = '{!! route("financialClassifiers.exportExcel") !!}';
-                            setTimeout(() => $btn.prop('disabled', false).html(original), 3000);
+                            window.location.href = url;
+                            setTimeout(() => $btn.prop('disabled', false).html(orig), 3000);
                         }
                     },
                     {

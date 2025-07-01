@@ -26,12 +26,17 @@
     </tr>
     </thead>
     <tbody>
-    @foreach($classifiers as $u)
+    @foreach($classifiers as $classifier)
         <tr>
-            <td>{{ $u->type_name ?? '' }}</td>
-            <td>{{ $u->code ?? '' }}</td>
-            <td>{{ $u->name ?? '' }}</td>
-            <td>{{ $u->active ?? '' }}</td>
+            <td class="text-center">{{ $loop->iteration }}</td>
+            <td>{{ $classifier->type_name }}</td>
+            <td>{{ $classifier->code }}</td>
+            <td>{{ $classifier->name }}</td>
+            <td class="text-center">
+          <span class="badge bg-{{ $classifier->active ? 'success' : 'danger' }}">
+            {{ $classifier->active ? 'Activo' : 'Inactivo' }}
+          </span>
+            </td>
         </tr>
     @endforeach
     </tbody>

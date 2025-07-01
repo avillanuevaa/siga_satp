@@ -207,22 +207,51 @@ class FinancialClassifierController extends AdminController
         return response()->json($data);
     }
 
-    public function exportPrint()
+    public function exportPrint(Request $request)
     {
-        $classifiers = DB::table('financial_classifiers AS T1')
+        $query = DB::table('financial_classifiers AS T1')
             ->select('T1.*', 'T2.cParNombre AS type_name')
             ->join('parameters AS T2', function($join) {
                 $join->on('T1.type_id', '=', 'T2.nParCodigo')
                     ->on('T2.nParClase','=', DB::raw("'1001'"))
                     ->on('T2.nParTipo','=', DB::raw("'1'"));
-            })
-            ->get();
+            });
+
+        if ($keyword = $request->input('search.value')) {
+            $query->where(function($q) use ($keyword) {
+                $q->where('T2.cParNombre', 'like', "%{$keyword}%")
+                    ->orWhere('T1.code',       'like', "%{$keyword}%")
+                    ->orWhere('T1.name',       'like', "%{$keyword}%");
+            });
+        }
+
+        foreach ($request->input('columns', []) as $col) {
+            $val = $col['search']['value'] ?? null;
+            if ($val !== null && $val !== '') {
+                switch ($col['data']) {
+                    case 'tipo':
+                        $query->where('T2.cParNombre', 'like', "%{$val}%");
+                        break;
+                    case 'codigo':
+                        $query->where('T1.code',       'like', "%{$val}%");
+                        break;
+                    case 'nombre':
+                        $query->where('T1.name',       'like', "%{$val}%");
+                        break;
+                    case 'active':
+                        $query->where('T1.active',     $val);
+                        break;
+                }
+            }
+        }
+
+        $classifiers = $query->get();
 
         return view('admin.financial_classifier.print_classifiers', compact('classifiers'));
     }
 
-    public function exportExcel()
+    public function exportExcel(Request $request)
     {
-        return Excel::download(new FinancialClassifierExport, 'clasificadores.xlsx');
+        return Excel::download(new FinancialClassifierExport($request), 'clasificadores.xlsx');
     }
 }
